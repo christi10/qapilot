@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# qapilot — the device driver (Rust). Builds itself on first use or after a source change.
+#   bin/qapilot screen | do "<step>"… | audit | shot <file> | snap list|save|load <name> | up | release | mcp | design … | cross …
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BIN="$ROOT/target/release/qapilot"
+if [ ! -x "$BIN" ] || [ -n "$(find "$ROOT/src" "$ROOT/Cargo.toml" -newer "$BIN" -print -quit 2>/dev/null)" ]; then
+  CARGO="$(command -v cargo || echo "$HOME/.cargo/bin/cargo")"
+  "$CARGO" build --release --quiet --manifest-path "$ROOT/Cargo.toml" >&2
+fi
+exec "$BIN" "$@"

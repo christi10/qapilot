@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+// Save a Figma render (the URL mcp__figma__get_screenshot returns) as a PNG inside a run folder.
+//   bin/figma-png <url> <out.png>
+// Only Figma's own hosts, only https, only a PNG/JPEG answer, at most 25 MB — so a run cannot use it to fetch anything else.
+const fs = require('node:fs');
+const path = require('node:path');
+const [url, out] = process.argv.slice(2);
+if (!url || !out) { console.error('usage: bin/figma-png <url> <out.png>'); process.exit(2); }
+let u;
+try { u = new URL(url); } catch { console.error('not a URL'); process.exit(2); }
+const host = u.hostname.toLowerCase();
+const figmaHost = host === 'figma.com' || host.endsWith('.figma.com') || (host.endsWith('.amazonaws.com') && host.includes('figma'));
+if (u.protocol !== 'https:' || !figmaHost) { console.error(`refusing ${host}: not a Figma host`); process.exit(2); }
+if (!/\.png$/i.test(out)) { console.error('out must end in .png'); process.exit(2); }
+(async () => {
+  const r = await fetch(u, { redirect: 'follow' });
+  if (!r.ok) { console.error(`HTTP ${r.status}`); process.exit(1); }
+  const type = r.headers.get('content-type') || '';
+  if (!/^image\/(png|jpeg)/.test(type)) { console.error(`not an image: ${type}`); process.exit(1); }
+  const buf = Buffer.from(await r.arrayBuffer());
+  if (buf.length > 25 * 1024 * 1024) { console.error('image too large'); process.exit(1); }
+  fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
+  fs.writeFileSync(out, buf);
+  console.log(`${out} (${Math.round(buf.length / 1024)} KB)`);
+})().catch((e) => { console.error(e.message); process.exit(1); });

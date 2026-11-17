@@ -1,0 +1,10 @@
+{
+  "id": "shop",
+  "name": "Shop",
+  "package": "com.example.shop",
+  "ios": { "bundleId": "com.example.shop" },
+  "figma": [{ "name": "App design", "url": "https://www.figma.com/design/AbCdEfGhIjKlMnOpQrStUv/Shop" }],
+  "testData": { "user1": "two saved cards", "user2": "a new customer, nothing saved" },
+  "login": "At the PIN screen: `digits $TEST_PIN`. At the login screen: type $TEST_USER and $TEST_PASSWORD; `otpmark` before the step that sends the SMS code, then `otp $TEST_USER`.",
+  "sameWords": ["shop"]
+}

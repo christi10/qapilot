@@ -1,0 +1,27 @@
+[package]
+name = "qapilot"
+version = "0.1.0"
+edition = "2021"
+description = "Fast Android and iOS device driver for mobile app testing: screen reads, taps, typing, waits, OTPs, snapshots, screen navigation, a screen audit and a design check against Figma, as a CLI and an MCP server."
+license = "MIT"
+repository = "https://github.com/christi10/qapilot"
+readme = "README.md"
+publish = false
+
+[dependencies]
+tokio = { version = "1", features = ["rt", "net", "time", "macros", "io-util"] }
+h2 = "0.4"
+http = "1"
+bytes = "1"
+quick-xml = "0.36"
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+base64 = "0.22"
+ab_glyph = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+strip = true
